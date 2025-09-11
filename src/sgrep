@@ -1,0 +1,67 @@
+#!/bin/bash
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <search_mode> <string_to_search>"
+    exit 1
+fi
+
+MODE="$1"
+ARG="$2"
+echo "Grepping '$ARG' in $MODE search mode..."
+
+case "$MODE" in
+    flatpak)
+        source ./modes/flatpak.search
+        LIST_FUNC="list_ids_flatpak"
+        ;;
+    dnf)
+        source ./modes/dnf.search
+        LIST_FUNC="list_ids_dnf"
+        ;;
+    *)
+        echo "Unknown mode: $MODE"
+        exit 1
+        ;;
+esac
+
+# 1️⃣ Tenta grep direto
+RESULTS=$($LIST_FUNC | grep -i "$ARG")
+
+# 2️⃣ Se grep retornou mais de uma linha, abre fzf para selecionar
+if [ -n "$RESULTS" ]; then
+    COUNT=$(echo "$RESULTS" | wc -l)
+    if [ "$COUNT" -gt 1 ]; then
+        echo "Multiple matches found. Select one:"
+        RESULT=$(echo "$RESULTS" | fzf --prompt="Select $SEARCH_MODE from the list: ")
+    else
+        RESULT="$RESULTS"
+    fi
+fi
+
+# 3️⃣ Se grep não encontrou nada, tenta fuzzy find
+if [ -z "$RESULT" ]; then
+    echo "No exact match found. Trying fuzzy find..."
+    RESULT=$($LIST_FUNC | fzf --filter="$ARG" --prompt="Fuzzy find $SEARCH_MODE: ")
+fi
+
+# 4️⃣ Se fuzzy find também não retornou nada, abre lista completa
+if [ -z "$RESULT" ]; then
+    echo "No fuzzy match found. Opening full list..."
+    RESULT=$($LIST_FUNC | fzf --prompt="Select $SEARCH_MODE from full list: ")
+fi
+
+# 5️⃣ Se nada for selecionado, aborta
+if [ -z "$RESULT" ]; then
+    echo "Search has failed."
+    exit 1
+fi
+
+if [ "$MODE" == "dnf" ]; then
+    install_package_dnf "$RESULT"
+    exit 1
+fi
+
+echo "$RESULT" | wl-copy
+echo "\"$RESULT\" copied to clipboard."
+
+
