@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Função para listar Application IDs do flatpak
-list_ids_flatpak() {
-    SEARCH_MODE="flatpak"
-    # Pega apenas Application IDs (palavras com ponto)
-    flatpak list | awk '{for(i=2;i<=NF;i++){if($i ~ /\./){print $i; break}}}'
-}
-
