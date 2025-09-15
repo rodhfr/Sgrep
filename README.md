@@ -6,11 +6,13 @@ Try **Flatgrep** for fuzzy search and grep what you want in just seconds.
 
 * **Quick test :** 
 ```bash
-flatgrep search "mpv" --flathub 
+flatgrep run mpv
 ```
 
-> [!TIP] 
-> Without the `--flathub` flag it searches for installed flatpaks
+* **Fast and easy install apps from flathub:**
+```bash
+flatgrep install firefox
+```
 
 | Action                          | Linux Command                          |
 |---------------------------------|----------------------------------------|
@@ -28,9 +30,10 @@ flatgrep search "mpv" --flathub
 - [x] Run Flatpaks with `run` mode 'feature: 2025-09-15'
 
 ### Planned 🛠️
-- [ ] Write installation guide
-- [ ] Write documentation
-- [ ] Make search better by also searching by app names not only app ids
+- [ ] Write installation guide.
+- [ ] Write documentation.
+- [ ] Search mode also searches by app names not only app ids.
+- [ ] Run mode update: Auto install app if not available.
 
 ### Potential Features 🤔
 - [ ] Other package managers like dnf/pacman/aur helpers.
